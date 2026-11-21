@@ -25,6 +25,7 @@ const portal = 'https://cybercrime.gov.in/'
 const chakshu = 'https://sancharsaathi.gov.in/'
 const textSchema = z.string().trim().min(3).max(4000)
 const scanSchema = z.object({ text: z.string().max(8000), url: z.string().max(2000) })
+const standaloneLink = /^(?:[a-z][a-z\d+.-]*:\/\/\S*|(?:(?:[\p{L}\p{N}-]+[.。．｡])+[\p{L}\p{N}-]+\.?|\[[\da-f:.]+\])(?::\d*)?(?:[/?#]\S*)?)$/iu
 const imageTypes = ['image/png', 'image/jpeg', 'image/webp']
 const errorKeys = new Set(['empty_input', 'invalid_input', 'invalid_url', 'invalid_image', 'unsupported_image', 'upload_too_large', 'rate_limit', 'review_required'])
 
@@ -128,8 +129,10 @@ function ScanPage({ home = false }: { home?: boolean }) {
     submitting.current = true
     setError('')
     const body = new FormData()
-    body.set('text', data.text)
-    body.set('url', data.url)
+    const message = data.text.trim()
+    const useMessageAsUrl = !data.url.trim() && standaloneLink.test(message)
+    body.set('text', useMessageAsUrl ? '' : data.text)
+    body.set('url', useMessageAsUrl ? message : data.url)
     body.set('language', language)
     if (file) body.set('image', file)
     try {

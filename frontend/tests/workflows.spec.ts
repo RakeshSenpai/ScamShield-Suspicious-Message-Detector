@@ -164,3 +164,57 @@ test('keeps generated prose and evidence when the interface language changes', a
   await expect(page.getByText('स्कैन के समय AI की व्याख्या की भाषा · English')).toBeVisible()
   expect(scans).toBe(1)
 })
+
+test('routes a standalone link in Message through the URL field flow', async ({ page }) => {
+  const link = 'sbi.example.com/signin'
+  await page.goto('/analyze')
+  const analyze = page.getByRole('button', { name: 'Analyze', exact: true })
+  const message = page.getByRole('textbox', { name: 'Message', exact: true })
+  const warning = page.getByText(/Brand name appears on a different domain/)
+  const scan = async () => {
+    const response = page.waitForResponse(response => response.url().endsWith('/api/analyze') && response.request().method() === 'POST')
+    await analyze.click()
+    return response
+  }
+  await message.fill('  ' + link + '\n')
+  const fromMessage = await scan()
+  expect(fromMessage.ok()).toBe(true)
+  await expect(warning).toBeVisible()
+  await expect(page.getByText('Medium Risk', { exact: true })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Analyze again' }).click()
+  await page.getByRole('button', { name: 'Link', exact: true }).click()
+  await page.getByRole('textbox', { name: 'Link', exact: true }).fill(link)
+  const fromLink = await scan()
+  expect(fromLink.ok()).toBe(true)
+  expect(await fromMessage.json()).toEqual(await fromLink.json())
+
+  await page.getByRole('button', { name: 'Analyze again' }).click()
+  await message.fill('Share your OTP to sign in at https://' + link)
+  await scan()
+  await expect(warning).toBeVisible()
+  await expect(page.getByText(/Requests a secret code or credential/)).toBeVisible()
+  await expect(page.getByText('High Risk', { exact: true })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Analyze again' }).click()
+  await message.fill('https://')
+  expect((await scan()).status()).toBe(422)
+  await expect(page.getByRole('alert')).toHaveText('Enter a valid HTTP or HTTPS link.')
+})
+
+test('retains the gradient with reduced motion on desktop and mobile', async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 850 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const gradient = () => page.locator('#root').evaluate(element => {
+      const style = getComputedStyle(element, '::before')
+      return { image: style.backgroundImage, animation: style.animationName }
+    })
+    expect((await gradient()).animation).toBe('gradient-drift')
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    const reduced = await gradient()
+    expect(reduced.animation).toBe('none')
+    expect(reduced.image).toContain('radial-gradient')
+  }
+})
