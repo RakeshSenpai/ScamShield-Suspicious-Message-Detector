@@ -1,4 +1,6 @@
 export type Language = 'en' | 'hi' | 'as'
+
+export const languageNames = { en: 'English', hi: 'हिंदी', as: 'অসমীয়া' } as const
 const strings: Record<string, [string, string, string]> = {
   analyze: ['Check a message', 'संदेश जाँचें', 'বাৰ্তা পৰীক্ষা কৰক'],
   emergency: ['Emergency help', 'आपातकालीन मदद', 'জৰুৰী সহায়'],
@@ -102,6 +104,15 @@ const strings: Record<string, [string, string, string]> = {
   unusual_port: ['Uses an unusual connection port', 'असामान्य कनेक्शन पोर्ट', 'অস্বাভাৱিক সংযোগ প’ৰ্ট'],
   lookalike_domain: ['Domain uses characters that resemble a brand name', 'डोमेन में ब्रांड जैसे दिखने वाले वर्ण हैं', 'ড’মেইনত ব্ৰেণ্ডৰ দৰে দেখা আখৰ আছে'],
   brand_domain: ['Brand name appears on a different domain', 'ब्रांड का नाम किसी दूसरे डोमेन पर है', 'ব্ৰেণ্ডৰ নাম বেলেগ ড’মেইনত আছে'],
+  generated_language: ['AI explanation language at scan time', 'स्कैन के समय AI की व्याख्या की भाषा', 'স্কেনৰ সময়ত AI ব্যাখ্যাৰ ভাষা'],
+  concern_strong: ['Strong warning signs', 'मज़बूत चेतावनी संकेत', 'শক্তিশালী সতৰ্কতাৰ চিন'],
+  concern_some: ['Some warning signs', 'कुछ चेतावनी संकेत', 'কিছুমান সতৰ্কতাৰ চিন'],
+  concern_none: ['No contextual warning signs', 'संदर्भ में कोई चेतावनी संकेत नहीं', 'প্ৰসংগত সতৰ্কতাৰ চিন নাই'],
+  concern_unclear: ['Unclear', 'अस्पष्ट', 'অস্পষ্ট'],
+  MALWARE: ['Malware', 'मैलवेयर', 'মেলৱেৰ'],
+  SOCIAL_ENGINEERING: ['Social engineering', 'सोशल इंजीनियरिंग', 'সামাজিক কৌশলেৰে প্ৰতাৰণা'],
+  UNWANTED_SOFTWARE: ['Unwanted software', 'अनचाहा सॉफ़्टवेयर', 'অবাঞ্ছিত ছফ্টৱেৰ'],
+  POTENTIALLY_HARMFUL_APPLICATION: ['Potentially harmful app', 'संभावित रूप से हानिकारक ऐप', 'সম্ভাৱ্য ক্ষতিকাৰক এপ'],
   summary: ['Summary', 'सारांश', 'সাৰাংশ'],
   concern: ['Level of concern', 'चिंता का स्तर', 'উদ্বেগৰ স্তৰ'],
   category: ['Suspected category', 'संदिग्ध श्रेणी', 'সন্দেহজনক শ্ৰেণী'],
